@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="PlatformState">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Normal"/>
+      <xs:enumeration value="Restarting"/>
+      <xs:enumeration value="Suspended"/>
+      <xs:enumeration value="Unknown"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="BlacklistedCount">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="NotAuthorized"/>
+      <xs:pattern value="[0-9]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="BlocksCount">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="NotAuthorized"/>
+      <xs:pattern value="[0-9]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="AutomationMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Enabled"/>
+      <xs:enumeration value="Disabled"/>
+      <xs:enumeration value="Unknown"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Rebalancing">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Disabled"/>
+      <xs:enumeration value="Enabled"/>
+      <xs:enumeration value="Unknown"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="MaintenanceMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NormalOperation"/>
+      <xs:enumeration value="Maintenance"/>
+      <xs:enumeration value="Unknown"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="PlatformExplain">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Version history:
+        2104: Updates for SCD version 21.04. Made elements optional
+        1901: Updates for SCD version 19.04. Added rebalancing
+        64: Updates for SCD version 6.4. Added any-disabled.
+        63: Updates for SCD version 6.3. Automation refactoring
+        62: Updates for SCD version 6.2. Added Error element
+        61: Updates for SCD version 6.1. Changed commands that uses automation state so they support multiple active strategies
+        60: Updates for SCD version 6.0. Added minorVersion to support patching.
+        1: Initial version.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element name="UnexpectedError" type="xs:string"/>
+        <xs:sequence>
+          <xs:element name="ServiceSegment" type="xs:string" minOccurs="0"/>
+          <xs:element name="DirectoryServices" type="xs:string" minOccurs="0"/>
+          <xs:choice>
+            <xs:sequence>
+              <xs:annotation>
+                <xs:documentation>Automation could not be found</xs:documentation>
+              </xs:annotation>
+              <xs:element name="AutomationUnavailable" type="xs:string"/>
+            </xs:sequence>
+            <xs:sequence>
+              <xs:annotation>
+                <xs:documentation>Automation service is available</xs:documentation>
+              </xs:annotation>
+              <xs:element name="PlatformState" type="PlatformState" minOccurs="0"/>
+              <xs:element name="MaintenanceMode" type="MaintenanceMode" minOccurs="0"/>
+              <xs:element name="Automation" type="AutomationMode" minOccurs="0"/>
+              <xs:element name="Rebalancing" type="Rebalancing" minOccurs="0"/>
+              <xs:element name="BlocksCount" type="BlocksCount" minOccurs="0"/>
+              <xs:element name="BlacklistedCount" type="BlacklistedCount" minOccurs="0"/>
+              <xs:element name="StaleCount" type="xs:nonNegativeInteger" minOccurs="0"/>
+              <xs:element name="AutomationStrategies" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="AutomationStrategy" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Id" type="xs:string"/>
+                          <xs:element name="Name" type="xs:string"/>
+                          <xs:element name="StrategyConfiguration" type="xs:string" minOccurs="0"/>
+                          <xs:element name="AutomationState">
+                            <xs:simpleType>
+                              <xs:restriction base="xs:string">
+                                <xs:enumeration value="NoDataAboutServiceDependencies"/>
+                                <xs:enumeration value="AllServicesOnline"/>
+                                <xs:enumeration value="SomeServicesOffline"/>
+                                <xs:enumeration value="AllServicesOnlineOrBlacklisted"/>
+                                <xs:enumeration value="Disabled"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="AnyDisabled" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:choice>
+          <xs:element name="Error" type="xs:string" minOccurs="0"/>
+          <xs:element name="Warnings" type="Warnings" minOccurs="0"/>
+        </xs:sequence>
+      </xs:choice>
+      <xs:attribute name="Version" type="xs:positiveInteger" use="required" fixed="2104"/>
+      <xs:attribute name="MinorVersion" type="xs:nonNegativeInteger" use="required" fixed="0"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Log">
+    <xs:sequence>
+      <xs:element name="Severity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Error"/>
+            <xs:enumeration value="Fatal"/>
+            <xs:enumeration value="Info"/>
+            <xs:enumeration value="Start"/>
+            <xs:enumeration value="Status"/>
+            <xs:enumeration value="StatusNonPersistent"/>
+            <xs:enumeration value="Stop"/>
+            <xs:enumeration value="Warning"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Warnings">
+    <xs:sequence>
+      <xs:element name="Logs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Log" type="Log" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Validations" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Message" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="AutomationExplain">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Version history:
+        64: Updates for SCD version 6.4. Added any-disabled.
+        63: Updates for SCD version 6.3. Added blocked. Automation refactoring.
+        62: Updates for SCD version 6.2. Added Error element
+        61: Updates for SCD version 6.1. Changed commands that uses automation state so they support multiple active strategies. Removed ParameterSet usage.
+        60: Updates for SCD version 6.0. Added minorVersion to support patching.
+        1: Initial version.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ServiceSegment" type="xs:string" minOccurs="0"/>
+        <xs:element name="DirectoryServices" type="xs:string" minOccurs="0"/>
+        <xs:choice>
+          <xs:element name="Error" type="xs:string"/>
+          <xs:element name="UnexpectedError" type="xs:string"/>
+          <xs:sequence>
+            <xs:element name="Automation">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="Unknown"/>
+                  <xs:enumeration value="Disabled"/>
+                  <xs:enumeration value="Enabled"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="AutomationStrategies" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="AutomationStrategy" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="Id" type="xs:string"/>
+                        <xs:element name="Name" type="xs:string"/>
+                        <xs:element name="StrategyConfiguration" type="xs:string" minOccurs="0"/>
+                        <xs:element name="AutomationState">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                              <xs:enumeration value="NoDataAboutServiceDependencies"/>
+                              <xs:enumeration value="AllServicesOnline"/>
+                              <xs:enumeration value="SomeServicesOffline"/>
+                              <xs:enumeration value="AllServicesOnlineOrBlacklisted"/>
+                              <xs:enumeration value="Disabled"/>
+                              <xs:enumeration value="AllServicesOnlineWithWarning" />
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="AnyDisabled" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                        <xs:element ref="Blocked" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element ref="BlockedTimeConstrained" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element ref="Blacklisted" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element ref="BlacklistedTimeConstrained" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element ref="ServicesNotRunning" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element ref="GroupsNotRunning" minOccurs="0" maxOccurs="unbounded"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="Warnings" type="Warnings" minOccurs="0"/>
+          </xs:sequence>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="Version" type="xs:positiveInteger" use="required" fixed="64"/>
+      <xs:attribute name="MinorVersion" type="xs:nonNegativeInteger" use="required" fixed="0"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Blocked">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Service" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BlockedTimeConstrained">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Service" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Blacklisted">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Service" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BlacklistedTimeConstrained">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Service" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Group">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Name" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GroupsNotRunning">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Group" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Log">
+    <xs:sequence>
+      <xs:element name="Severity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Error"/>
+            <xs:enumeration value="Fatal"/>
+            <xs:enumeration value="Info"/>
+            <xs:enumeration value="Start"/>
+            <xs:enumeration value="Status"/>
+            <xs:enumeration value="StatusNonPersistent"/>
+            <xs:enumeration value="Stop"/>
+            <xs:enumeration value="Warning"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Service">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Id" type="xs:nonNegativeInteger"/>
+        <xs:element name="Name">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="Unknown"/>
+              <xs:pattern value=".+"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Configuration" type="DatabaseElementType" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ServicesNotRunning">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Service" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="DatabaseElementType">
+    <xs:sequence>
+      <xs:element name="Id" type="xs:nonNegativeInteger"/>
+      <xs:element name="Name" type="xs:string" minOccurs="0"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Warnings">
+    <xs:sequence>
+      <xs:element name="Logs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Log" type="Log" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Validations" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Message" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

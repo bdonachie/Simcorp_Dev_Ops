@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="ServiceExplain">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Version history:
+        2307: Added Inoperable service state 
+        1901: Added Transitional management mode
+        641: Replaced Controller services statistics section with Agent resource information
+        62: Added OnlinePassive service state. Removed Active and Passive actions
+        61: Added Nickname. Added managementmode Infrastructure. Changed Database connection information
+        60: Updates for SCD version 6.0.
+            Added minorVersion to support patching.
+            Added ServiceAction. Activities and Processes can be omitted.
+            Changed activities to include additional activity types
+        1: Initial version.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element name="UnexpectedError" type="xs:string"/>
+        <xs:sequence>
+          <xs:element name="ServiceSegment" type="xs:string" minOccurs="0"/>
+          <xs:element name="DirectoryServices" type="xs:string" minOccurs="0"/>
+          <xs:element name="Service">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Id" type="xs:nonNegativeInteger"/>
+                <xs:element name="Name">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="Stale" type="xs:boolean"/>
+                <xs:element name="ServiceState" type="ServiceState"/>
+                <xs:element name="ManagementMode" type="ManagementModes"/>
+                <xs:element name="Action" type="Actions"/>
+                <xs:element name="ServiceInstance" type="xs:string"/>
+                <xs:element name="Configuration" type="DatabaseElementType" minOccurs="0"/>
+                <xs:element name="Nickname" type="xs:string" minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Agent">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Description" type="xs:string"/>
+                <xs:element name="Tag" type="xs:string" minOccurs="0"/>
+                <xs:element name="Capabilities" minOccurs="0">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="Capability" type="xs:string" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Activities" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Activity" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="Name" type="xs:string"/>
+                      <xs:element name="Items" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="Item" maxOccurs="unbounded">
+                              <xs:complexType>
+                                <xs:sequence>
+                                  <xs:element name="Name" type="xs:string"/>
+                                  <xs:element name="Value" type="xs:string"/>
+                                </xs:sequence>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="DatabaseConnections" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Connection" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="InstanceId" type="xs:nonNegativeInteger"/>
+                      <xs:element name="Sid" type="xs:nonNegativeInteger"/>
+                      <xs:element name="SerialNumber" type="xs:nonNegativeInteger"/>
+                      <xs:element name="Type">
+                        <xs:simpleType>
+                          <xs:restriction base="xs:string">
+                            <xs:enumeration value="Pooled"/>
+                            <xs:enumeration value="Custom"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="ResourceInformation" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="LoadIndex" type="xs:nonNegativeInteger"/>
+                <xs:element name="MaximumRunningServices">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="Value" type="xs:nonNegativeInteger"/>
+                      <xs:element name="Customised" type="xs:boolean"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+                <xs:element name="MaximumConcurrentOperations" type="xs:nonNegativeInteger"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="PublicEndpoints" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Endpoint" type="xs:string" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="ServiceEndpoints" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Endpoint" type="xs:string" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Processes" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Process" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Warnings" type="Warnings" minOccurs="0"/>
+        </xs:sequence>
+      </xs:choice>
+      <xs:attribute name="Version" type="xs:positiveInteger" use="required" fixed="2307"/>
+      <xs:attribute name="MinorVersion" type="xs:nonNegativeInteger" use="required" fixed="0"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="DatabaseElementType">
+    <xs:sequence>
+      <xs:element name="Id" type="xs:nonNegativeInteger"/>
+      <xs:element name="Name" type="xs:string" minOccurs="0"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="ManagementModes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Undefined"/>
+      <xs:enumeration value="System"/>
+      <xs:enumeration value="Automated"/>
+      <xs:enumeration value="Manual"/>
+      <xs:enumeration value="External"/>
+      <xs:enumeration value="Infrastructure"/>
+      <xs:enumeration value="Transitional"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Actions">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Undisclosed"/>
+      <xs:enumeration value="Executing"/>
+      <xs:enumeration value="Preparing"/>
+      <xs:enumeration value="Idle"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ServiceState">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Undefined"/>
+      <xs:enumeration value="Initialising"/>
+      <xs:enumeration value="Starting"/>
+      <xs:enumeration value="Online"/>
+      <xs:enumeration value="OnlinePassive"/>
+      <xs:enumeration value="Inoperable"/>
+      <xs:enumeration value="Finishing"/>
+      <xs:enumeration value="Closing"/>
+      <xs:enumeration value="Closed"/>
+      <xs:enumeration value="Failed"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Log">
+    <xs:sequence>
+      <xs:element name="Severity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Error"/>
+            <xs:enumeration value="Fatal"/>
+            <xs:enumeration value="Info"/>
+            <xs:enumeration value="Start"/>
+            <xs:enumeration value="Status"/>
+            <xs:enumeration value="StatusNonPersistent"/>
+            <xs:enumeration value="Stop"/>
+            <xs:enumeration value="Warning"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Warnings">
+    <xs:sequence>
+      <xs:element name="Logs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Log" type="Log" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Validations" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Message" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Process">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Id" type="xs:string"/>
+        <xs:element name="Name" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

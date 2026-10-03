@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="AgentExplain">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Version history:
+        641: Initial version.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element name="UnexpectedError" type="xs:string"/>
+        <xs:sequence>
+          <xs:element name="ServiceSegment" type="xs:string" minOccurs="0"/>
+          <xs:element name="DirectoryServices" type="xs:string" minOccurs="0"/>
+          <xs:element name="Agent">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="AgentType">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:enumeration value="Agent"/>
+                      <xs:enumeration value="MainAgent"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="Description" type="xs:string"/>
+                <xs:element name="Tag" type="xs:string" minOccurs="0"/>
+                <xs:element name="Capabilities" minOccurs="0">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="Capability" type="xs:string" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+            <xs:element name="ResourceInformation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="LoadIndex" type="xs:nonNegativeInteger" minOccurs="0"/>
+                        <xs:element name="CpuUtilization" type="xs:nonNegativeInteger" minOccurs="0"/>
+                        <xs:element name="ServiceCountOnAgent" type="xs:nonNegativeInteger" minOccurs="0"/>
+                        <xs:element name="ServiceCountOnServer" type="xs:nonNegativeInteger" minOccurs="0"/>
+                        <xs:element name="MaximumRunningServices">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="Value" type="xs:nonNegativeInteger"/>
+                                    <xs:element name="Customised" type="xs:boolean"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="Cores" type="xs:nonNegativeInteger" minOccurs="0"/>
+                        <xs:element name="MaximumConcurrentOperations" type="xs:nonNegativeInteger" minOccurs="0"/>
+                        <xs:element name="AvailableMemory" type="xs:nonNegativeInteger" minOccurs="0"/>
+                        <xs:element name="InstalledMemory" type="xs:nonNegativeInteger" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+      </xs:choice>
+      <xs:attribute name="Version" type="xs:positiveInteger" use="required" fixed="641"/>
+      <xs:attribute name="MinorVersion" type="xs:nonNegativeInteger" use="required" fixed="0"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Log">
+    <xs:sequence>
+      <xs:element name="Severity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Error"/>
+            <xs:enumeration value="Fatal"/>
+            <xs:enumeration value="Info"/>
+            <xs:enumeration value="Start"/>
+            <xs:enumeration value="Status"/>
+            <xs:enumeration value="StatusNonPersistent"/>
+            <xs:enumeration value="Stop"/>
+            <xs:enumeration value="Warning"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Warnings">
+    <xs:sequence>
+      <xs:element name="Logs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Log" type="Log" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Validations" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Message" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

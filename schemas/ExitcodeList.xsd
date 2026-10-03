@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Exitcode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Value" type="xs:integer"/>
+        <xs:element name="Name" type="xs:string"/>
+        <xs:element name="Description" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Exitcodes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Exitcode" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExitcodeList">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Version history:
+        61: ExitCodes will be positive for failures/errors and negative for state information
+        60: Updates for SCD version 6.0. Added minorVersion to support patching.
+        1: Initial version.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Exitcodes"/>
+        <xs:element name="Warnings" type="Warnings" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="Version" type="xs:positiveInteger" use="required" fixed="61"/>
+      <xs:attribute name="MinorVersion" type="xs:nonNegativeInteger" use="required" fixed="0"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Log">
+    <xs:sequence>
+      <xs:element name="Severity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Error"/>
+            <xs:enumeration value="Fatal"/>
+            <xs:enumeration value="Info"/>
+            <xs:enumeration value="Start"/>
+            <xs:enumeration value="Status"/>
+            <xs:enumeration value="StatusNonPersistent"/>
+            <xs:enumeration value="Stop"/>
+            <xs:enumeration value="Warning"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Warnings">
+    <xs:sequence>
+      <xs:element name="Logs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Log" type="Log" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Validations" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Message" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

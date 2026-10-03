@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Dimension.ServiceControl.PowerShell</RootNamespace>
+    <AssemblyName>Dimension.ServiceControl.PowerShell</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>PowerShell cmdlets over the Dimension service control wrapper.</Description>
+    <Authors>Ben Donachie</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference only. PowerShell supplies these types at run time, so the package must
+         not be copied into the module folder. -->
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dimension.ServiceControl\Dimension.ServiceControl.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dimension.ServiceControl.PowerShell.psd1" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

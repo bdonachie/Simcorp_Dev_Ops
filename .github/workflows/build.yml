@@ -1,0 +1,32 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    # Windows because the process tests drive cmd.exe and the module is verified in
+    # Windows PowerShell 5.1, which is the older of the two hosts it supports.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build
+        run: dotnet build Dimension.ServiceControl.sln --configuration Release
+
+      - name: Test
+        run: dotnet test Dimension.ServiceControl.sln --configuration Release --no-build
+
+      - name: Import the module in Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          Import-Module .\src\Dimension.ServiceControl.PowerShell\bin\Release\netstandard2.0\Dimension.ServiceControl.PowerShell.psd1
+          $cmdlets = Get-Command -Module Dimension.ServiceControl.PowerShell
+          $cmdlets | Format-Table Name, CommandType
+          if ($cmdlets.Count -ne 9) { throw "Expected 9 cmdlets, found $($cmdlets.Count)." }

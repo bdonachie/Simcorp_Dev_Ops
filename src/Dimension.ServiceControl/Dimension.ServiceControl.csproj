@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Dimension.ServiceControl</RootNamespace>
+    <AssemblyName>Dimension.ServiceControl</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Typed .NET wrapper over the SimCorp Dimension ScdSvcCtl.exe service control utility.</Description>
+    <Authors>Ben Donachie</Authors>
+  </PropertyGroup>
+
+</Project>

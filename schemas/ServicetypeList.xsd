@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="ServicetypeList">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Version history:
+        2510: Added SinglePerAgent
+        641: Added Relocatable; added Scalable
+        60: Updates for SCD version 6.0. Added minorVersion to support patching. Added DesktopHeap to Service.
+        2: Added Instance, Port and APL to Service.
+        1: Initial version.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element name="UnexpectedError" type="xs:string"/>
+        <xs:sequence>
+          <xs:element name="ServiceSegment" type="xs:string" minOccurs="0"/>
+          <xs:element name="DirectoryServices" type="xs:string" minOccurs="0"/>
+          <xs:element ref="Services"/>
+          <xs:element name="Warnings" type="Warnings" minOccurs="0"/>
+        </xs:sequence>
+      </xs:choice>
+      <xs:attribute name="Version" type="xs:positiveInteger" use="required" fixed="641"/>
+      <xs:attribute name="MinorVersion" type="xs:nonNegativeInteger" use="required" fixed="0"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Service">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Id" type="xs:nonNegativeInteger"/>
+        <xs:element name="Name" type="xs:string"/>
+        <xs:element name="Configuration">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:pattern value="Unavailable"/>
+                    <xs:pattern value="[a-zA-Z0-9 _-]+"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Necessity" type="Necessity"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Instance" type="Instance" minOccurs="0"/>
+        <xs:element name="Port" type="YesNo" minOccurs="0"/>
+        <xs:element name="APL" type="YesNo" minOccurs="0"/>
+        <xs:element name="DesktopHeap" type="DesktopHeap" minOccurs="0"/>
+        <xs:element name="Relocatable" type="YesNo" minOccurs="0"/>
+        <xs:element name="Scalable" type="Scalable" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Services">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Service" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="Necessity">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None"/>
+      <xs:enumeration value="Optional"/>
+      <xs:enumeration value="Mandatory"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Instance">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Multiple"/>
+      <xs:enumeration value="Single"/>
+      <xs:enumeration value="SinglePerConfiguration"/>
+      <xs:enumeration value="SinglePerAgent"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="YesNo">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Yes"/>
+      <xs:enumeration value="No"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Scalable">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NotScalable"/>
+      <xs:enumeration value="Scalable"/>
+      <xs:enumeration value="ScalableNoConfiguration"/>
+      <xs:enumeration value="ScalableWithConfiguration"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DesktopHeap">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="NotApplicable"/>
+      <xs:pattern value="Shared"/>
+      <xs:pattern value="[0-9]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Log">
+    <xs:sequence>
+      <xs:element name="Severity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Error"/>
+            <xs:enumeration value="Fatal"/>
+            <xs:enumeration value="Info"/>
+            <xs:enumeration value="Start"/>
+            <xs:enumeration value="Status"/>
+            <xs:enumeration value="StatusNonPersistent"/>
+            <xs:enumeration value="Stop"/>
+            <xs:enumeration value="Warning"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Warnings">
+    <xs:sequence>
+      <xs:element name="Logs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Log" type="Log" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Validations" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Message" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
